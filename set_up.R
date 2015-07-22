@@ -22,8 +22,10 @@ psyc_1 <- psyc_1 %>%  summarise_each(funs(mean(., na.rm = TRUE))) # take average
   
 psyc_4 <- df %>% 
   filter(Program == 2 & Course_sample == 501) %>% # first year psyc
-  select(-c(Student_ID, Program, Course_sample)) %>% #take out unnecessary columns
-  summarise_each(funs(mean(., na.rm = TRUE))) # take average of each column
+  select(-c(Student_ID, Program, Course_sample)) #take out unnecessary columns
+
+n_4 <- nrow(psyc_4)
+psyc_4 <- psyc_4 %>%  summarise_each(funs(mean(., na.rm = TRUE))) # take average of each column
 
 ## second year
 year2 <- year2[ , -grep("Change", colnames(year2))] #remove change columns
@@ -38,3 +40,47 @@ n_2 <- nrow(score_1) #sample size for second year
 psyc_2 <- bind_rows(score_1, score_2) %>% #second year data
   summarise_each(funs(mean(., na.rm = TRUE))) %>% # take average of each column
   cbind(Year = 2, .) # add year column at start
+
+#reorder 2nd year and change names to match year 1 and 4 data for row bind:
+psyc_2 <- psyc_2[c("Year", "PS1.1", "PS2.1", "PS3.1", "PS4.1", "PS5.1", "PS6.1", "CT1.1", "CT2.1", "CT3.1", "CT4.1", "CT5.1", "WC1.1", "WC2.1", "WC3.1", "WC4.1", "WC5.1")]
+colnames(psyc_2) <- colnames(psyc_1)
+
+
+#combine into one data frame:
+psyc <- bind_rows(psyc_1, psyc_2, psyc_4)
+psyc$Year <- c(1.5, 2.5, 4.5) # fix years for plotting
+
+# separate by VALUE:
+
+ps <- psyc %>% 
+  subset(select = Year:PS6) %>% 
+  gather(learning_outcome, mean, PS1:PS6, na.rm = TRUE)
+
+ct <-  psyc %>% 
+  subset(select = c(Year, CT1:CT5)) %>% 
+  gather(learning_outcome, mean, CT1:CT5, na.rm = TRUE)
+
+wc <- psyc %>% 
+  subset(select = c(Year, WC1:WC5)) %>% 
+  gather(learning_outcome, mean, WC1:WC5, na.rm = TRUE)
+
+
+# summary:
+
+#take average over all the subcategories for each outcome
+ps_avg <- ps %>% spread(learning_outcome, mean) 
+ps_avg <- data.frame(Year = ps_avg[,1], mean = rowMeans(ps_avg[,-1], na.rm = TRUE))
+colnames(ps_avg) <- c("Year", "PS")
+
+ct_avg <- ct %>% spread(learning_outcome, mean) 
+ct_avg <- data.frame(Year = ct_avg[,1], mean = rowMeans(ct_avg[,-1], na.rm = TRUE))
+colnames(ct_avg) <- c("Year", "CT")
+
+wc_avg <- wc %>% spread(learning_outcome, mean) 
+wc_avg <- data.frame(Year = wc_avg[,1], mean = rowMeans(wc_avg[,-1], na.rm = TRUE))
+colnames(wc_avg) <- c("Year", "WC")
+
+#combine averages into one data frame and tidy
+summary <- cbind(ps_avg, ct_avg, wc_avg) %>% #combine columns
+  subset(select = c("Year", "PS", "CT", "WC")) %>% #take out repeated course_sample column
+  gather(learning_outcome, mean, PS:WC, na.rm = TRUE) #tidy
