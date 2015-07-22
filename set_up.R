@@ -10,7 +10,7 @@ library(RColorBrewer)
 
 # load data
 df = read.csv("VALUE 1-4.csv")
-year2 = read.csv("PSYC 203 Value Rubric Data (Yr 2).csv")
+year_2 = read.csv("PSYC 203 Value Rubric Data (Yr 2).csv")
 
 # 1st year
 psyc_1 <- df %>% 
@@ -28,11 +28,11 @@ n_4 <- nrow(psyc_4)
 psyc_4 <- psyc_4 %>%  summarise_each(funs(mean(., na.rm = TRUE))) # take average of each column
 
 ## second year
-year2 <- year2[ , -grep("Change", colnames(year2))] #remove change columns
+year_2 <- year_2[ , -grep("Change", colnames(year_2))] #remove change columns
 
 # average the 2 markers' scores for second year
-score_1 <- year2 %>% select(PS1.1:WC5.1)
-score_2 <- year2 %>% select(PS1.2:WC5.2)
+score_1 <- year_2 %>% select(PS1.1:WC5.1)
+score_2 <- year_2 %>% select(PS1.2:WC5.2)
 colnames(score_2) <- colnames(score_1) # change column names for row bind
 
 n_2 <- nrow(score_1) #sample size for second year
@@ -48,7 +48,7 @@ colnames(psyc_2) <- colnames(psyc_1)
 
 #combine into one data frame:
 psyc <- bind_rows(psyc_1, psyc_2, psyc_4)
-psyc$Year <- c(1.5, 2.5, 4.5) # fix years for plotting
+#psyc$Year <- c(1.5, 2.5, 4.5) # fix years for plotting
 
 # separate by VALUE:
 
@@ -84,3 +84,15 @@ colnames(wc_avg) <- c("Year", "WC")
 summary <- cbind(ps_avg, ct_avg, wc_avg) %>% #combine columns
   subset(select = c("Year", "PS", "CT", "WC")) %>% #take out repeated course_sample column
   gather(learning_outcome, mean, PS:WC, na.rm = TRUE) #tidy
+
+
+# x axis labels with sample sizes
+n_3 <- 0  
+
+
+year1 <- paste0("First Year\nn = ", n_1) #text string for xlabel including sample size    
+year2 <- paste0("Second Year\nn = ", n_2) #text string for xlabel   
+year3 <- paste0("Third Year\nn = ", n_3) #text string for xlabel    
+year4 <- paste0("Fourth Year\nn = ", n_4) #text string for xlabel
+
+
