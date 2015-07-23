@@ -48,7 +48,6 @@ colnames(psyc_2) <- colnames(psyc_1)
 
 #combine into one data frame:
 psyc <- bind_rows(psyc_1, psyc_2, psyc_4)
-#psyc$Year <- c(1.5, 2.5, 4.5) # fix years for plotting
 
 # separate by VALUE:
 

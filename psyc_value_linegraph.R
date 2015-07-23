@@ -25,7 +25,7 @@ graph_title = "Written Communication"
 
 learning = summary #summary of the 3 outcomes  
 legend = c("Problem Solving", "Critical Thinking", "Written Communication")
-col = c("#33CC44", "#3388EE", "#FF8833")
+col = c("#FF8833" , "#33CC44", "#3388EE")
 shape_vals = c(15,16, 17) #values for scale_shape_manual
 graph_title = "Learning Outcomes"
 
